@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://smart-waste-bin-system-backend.onrender.com/api/$1"
+    }
+  ]
+}
