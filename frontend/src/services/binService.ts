@@ -24,7 +24,10 @@ export const createBin = async (bin: Partial<Bin>): Promise<Bin> => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(bin),
   });
-  if (!res.ok) throw new Error("Failed to create bin");
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => null);
+    throw new Error(errorData?.error || "Failed to create bin");
+  }
   return res.json();
 };
 
@@ -39,7 +42,10 @@ export const updateBin = async (id: string, bin: Partial<Bin>): Promise<Bin> => 
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(bin),
   });
-  if (!res.ok) throw new Error('Failed to update bin');
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => null);
+    throw new Error(errorData?.error || "Failed to update bin");
+  }
   return res.json();
 };
 

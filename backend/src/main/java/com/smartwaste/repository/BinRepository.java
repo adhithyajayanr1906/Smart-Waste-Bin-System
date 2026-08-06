@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface BinRepository extends MongoRepository<Bin, String> {
     Optional<Bin> findByBinCode(String binCode);
+    boolean existsByBinCode(String binCode);
 }

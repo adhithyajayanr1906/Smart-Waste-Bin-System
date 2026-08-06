@@ -12,6 +12,11 @@ import java.util.Map;
 @RequestMapping("/api/bins")
 public class BinController {
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+    }
+
     private final BinService binService;
 
     public BinController(BinService binService) {

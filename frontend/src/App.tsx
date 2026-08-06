@@ -127,6 +127,11 @@ export default function App() {
       return;
     }
 
+    if (!createData.binCode.match(/^[A-Z]{3}-\d{3}$/)) {
+      setError("Bin code must be in format 'BIN-001' (3 uppercase letters, hyphen, 3 numbers)");
+      return;
+    }
+
     try {
       await createBin({
         binCode: createData.binCode,
@@ -139,7 +144,7 @@ export default function App() {
       setMessage('Bin created successfully.');
     } catch (e) {
       console.error(e);
-      setError('Failed to create bin.');
+      setError(e instanceof Error ? e.message : 'Failed to create bin.');
     }
   };
 
