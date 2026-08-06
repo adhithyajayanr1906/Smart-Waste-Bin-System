@@ -592,11 +592,7 @@ const subtitleStyle = {
   color: '#64748b',
 } as const;
 
-const hintStyle = {
-  marginTop: '14px',
-  fontSize: '13px',
-  color: '#64748b',
-} as const;
+
 
 const errorStyle = {
   color: '#b91c1c',
