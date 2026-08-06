@@ -22,10 +22,11 @@ type ComplaintForm = {
   reporterEmail: string;
 };
 
-const issueTypes = ['Overflowing', 'Damaged Bin', 'Bad Smell', 'Blocked Access'];
+const issueTypes = ['Overflowing', 'Damaged Bin', 'Bad Smell', 'Blocked Access', 'Other'];
 
 export default function App() {
-  const [role, setRole] = useState<UserRole>(null);
+  const [role, setRole] = useState<UserRole>('user');
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -53,18 +54,14 @@ export default function App() {
     e.preventDefault();
     if (username === 'admin' && password === 'admin123') {
       setRole('admin');
+      setShowAdminLogin(false);
       setError('');
       setMessage('');
       setUserView('home');
       loadBins();
       loadComplaints();
-    } else if (username === 'user' && password === 'user123') {
-      setRole('user');
-      setError('');
-      setMessage('');
-      setUserView('home');
     } else {
-      setError('Invalid username or password');
+      setError('Invalid admin username or password');
       setMessage('');
     }
   };
@@ -101,13 +98,15 @@ export default function App() {
     setMessage('');
     setTrackingMessage('');
 
-    if (!form.binCode || !form.reporterEmail || !form.description) {
-      setError('Please complete all fields before submitting.');
+    const finalDescription = form.issueType === 'Other' ? form.description : form.issueType;
+
+    if (!form.binCode || !form.reporterEmail || (form.issueType === 'Other' && !form.description)) {
+      setError('Please complete all required fields before submitting.');
       return;
     }
 
     try {
-      await createComplaint(form);
+      await createComplaint({ ...form, description: finalDescription });
       setSubmitted(true);
       setMessage('Complaint submitted successfully.');
       setForm({ ...form, description: '', reporterEmail: '' });
@@ -220,7 +219,7 @@ export default function App() {
   };
 
   const logout = () => {
-    setRole(null);
+    setRole('user');
     setUsername('');
     setPassword('');
     setError('');
@@ -233,7 +232,12 @@ export default function App() {
 
   const userPortalHeader = (
     <section style={sectionStyle}>
-      <h2>Citizen Portal</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h2>Citizen Portal</h2>
+        <button type="button" style={secondaryButtonStyle} onClick={() => setShowAdminLogin(true)}>
+          Admin Login
+        </button>
+      </div>
       <p>Choose an action after scanning the QR code on the bin.</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginTop: '16px' }}>
         <button type="button" style={secondaryButtonStyle} onClick={async () => { setUserView('nearby'); await loadBins(); setMessage(''); setTrackingMessage(''); }}>
@@ -249,22 +253,21 @@ export default function App() {
     </section>
   );
 
-  if (!role) {
+  if (showAdminLogin) {
     return (
       <div style={pageStyle}>
         <div style={cardStyle}>
-          <h1 style={titleStyle}>Smart Waste Login</h1>
-          <p style={subtitleStyle}>Admin and user access with separate credentials.</p>
+          <h1 style={titleStyle}>Admin Login</h1>
+          <p style={subtitleStyle}>Access restricted to administrators.</p>
           <form onSubmit={login} style={formStyle}>
             <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" style={inputStyle} />
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" style={inputStyle} />
             {error ? <div style={errorStyle}>{error}</div> : null}
-            <button type="submit" style={primaryButtonStyle}>Login</button>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button type="submit" style={primaryButtonStyle}>Login</button>
+              <button type="button" onClick={() => { setShowAdminLogin(false); setError(''); }} style={secondaryButtonStyle}>Cancel</button>
+            </div>
           </form>
-          <div style={hintStyle}>
-            <div><strong>Admin:</strong> admin / admin123</div>
-            <div><strong>User:</strong> user / user123</div>
-          </div>
         </div>
       </div>
     );
@@ -274,7 +277,9 @@ export default function App() {
     <div style={pageStyle}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
         <h1 style={{ margin: 0 }}>{role === 'admin' ? 'Admin Dashboard' : 'Citizen Portal'}</h1>
-        <button onClick={logout} style={secondaryButtonStyle}>Logout</button>
+        {role === 'admin' ? (
+          <button onClick={logout} style={secondaryButtonStyle}>Logout</button>
+        ) : null}
       </div>
 
       {error ? <div style={errorStyle}>{error}</div> : null}
@@ -437,12 +442,14 @@ export default function App() {
                     <option key={option} value={option}>{option}</option>
                   ))}
                 </select>
-                <textarea
-                  value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  placeholder="Describe the issue"
-                  style={{ ...inputStyle, minHeight: '100px' }}
-                />
+                {form.issueType === 'Other' && (
+                  <textarea
+                    value={form.description}
+                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    placeholder="Describe the issue"
+                    style={{ ...inputStyle, minHeight: '100px' }}
+                  />
+                )}
                 <input
                   value={form.reporterEmail}
                   onChange={(e) => setForm({ ...form, reporterEmail: e.target.value })}
