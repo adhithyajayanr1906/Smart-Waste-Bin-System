@@ -106,6 +106,11 @@ export default function App() {
       return;
     }
 
+    if (!form.binCode.match(/^BIN-\d{3}$/)) {
+      setError("Bin code must be in format 'BIN-000' (exactly 'BIN-' followed by 3 numbers)");
+      return;
+    }
+
     try {
       await createComplaint({ ...form, description: finalDescription });
       setSubmitted(true);
@@ -128,8 +133,8 @@ export default function App() {
       return;
     }
 
-    if (!createData.binCode.match(/^[A-Z]{3}-\d{3}$/)) {
-      setError("Bin code must be in format 'BIN-001' (3 uppercase letters, hyphen, 3 numbers)");
+    if (!createData.binCode.match(/^BIN-\d{3}$/)) {
+      setError("Bin code must be in format 'BIN-001' (exactly 'BIN-' followed by 3 numbers)");
       return;
     }
 

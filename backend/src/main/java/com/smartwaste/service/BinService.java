@@ -55,8 +55,8 @@ public class BinService {
     }
 
     private void validateBinCode(String binCode) {
-        if (binCode == null || !binCode.matches("^[A-Z]{3}-\\d{3}$")) {
-            throw new IllegalArgumentException("Bin code must be in format 'BIN-001' (3 uppercase letters, hyphen, 3 numbers)");
+        if (binCode == null || !binCode.matches("^BIN-\\d{3}$")) {
+            throw new IllegalArgumentException("Bin code must be in format 'BIN-001' (exactly 'BIN-' followed by 3 numbers)");
         }
     }
 }
