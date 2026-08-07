@@ -23,7 +23,7 @@ public class ComplaintService {
     public Complaint saveComplaint(Complaint complaint) {
         Optional<Bin> binOpt = binRepository.findByBinCode(complaint.getBinCode());
         if (binOpt.isEmpty() || !"ACTIVE".equalsIgnoreCase(binOpt.get().getStatus())) {
-            throw new IllegalArgumentException("Bin unavailable");
+            throw new IllegalArgumentException("no bins found");
         }
         
         complaint.setStatus(complaint.getStatus() == null ? "PENDING" : complaint.getStatus());
