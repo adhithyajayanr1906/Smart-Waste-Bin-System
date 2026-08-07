@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import type { Bin } from './types/bin';
 import {
   getBins,
@@ -50,6 +50,18 @@ export default function App() {
   const [trackBinCode, setTrackBinCode] = useState('');
   const [trackResults, setTrackResults] = useState<Complaint[]>([]);
   const [trackingMessage, setTrackingMessage] = useState('');
+
+  useEffect(() => {
+    if (error || message || trackingMessage || submitted) {
+      const timer = setTimeout(() => {
+        setError('');
+        setMessage('');
+        setTrackingMessage('');
+        setSubmitted(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, message, trackingMessage, submitted]);
 
   const login = (e: FormEvent) => {
     e.preventDefault();
