@@ -89,6 +89,11 @@ export const updateComplaintStatus = async (id: string, status: string): Promise
   return res.json();
 };
 
+export const deleteComplaint = async (id: string): Promise<void> => {
+  const res = await fetch(`/api/complaints/${id}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error('Failed to delete complaint');
+};
+
 
 export const getComplaintsByBin = async (binCode: string): Promise<Complaint[]> => {
   const res = await fetch(`/api/complaints/bin/${encodeURIComponent(binCode)}`);

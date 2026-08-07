@@ -44,4 +44,10 @@ public class ComplaintController {
         Complaint updated = complaintService.updateComplaintStatus(id, status);
         return updated == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(updated);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteComplaint(@PathVariable String id) {
+        complaintService.deleteComplaint(id);
+        return ResponseEntity.noContent().build();
+    }
 }

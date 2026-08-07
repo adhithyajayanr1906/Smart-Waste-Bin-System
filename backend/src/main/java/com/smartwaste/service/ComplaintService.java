@@ -40,13 +40,12 @@ public class ComplaintService {
 
     public Complaint updateComplaintStatus(String id, String status) {
         return complaintRepository.findById(id).map(complaint -> {
-            if ("RESOLVED".equalsIgnoreCase(status)) {
-                complaintRepository.delete(complaint);
-                complaint.setStatus(status);
-                return complaint;
-            }
             complaint.setStatus(status);
             return complaintRepository.save(complaint);
         }).orElse(null);
+    }
+
+    public void deleteComplaint(String id) {
+        complaintRepository.deleteById(id);
     }
 }

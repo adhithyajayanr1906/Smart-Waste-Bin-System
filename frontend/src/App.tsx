@@ -9,6 +9,7 @@ import {
   getComplaints,
   getComplaintsByBin,
   updateComplaintStatus,
+  deleteComplaint,
 } from './services/binService';
 import type { Complaint } from './services/binService';
 
@@ -193,13 +194,15 @@ export default function App() {
     }
   };
 
-  const handleScanQr = () => {
-    const code = prompt('Enter bin code from QR sticker');
-    if (code) {
-      setForm({ ...form, binCode: code });
-      setTrackBinCode(code);
-      setMessage('Bin code loaded from QR scan.');
-      setError('');
+  const handleDeleteComplaint = async (id: string) => {
+    if (!confirm('Permanent delete: Are you sure you want to delete this issue report?')) return;
+    try {
+      await deleteComplaint(id);
+      await loadComplaints();
+      setMessage('Complaint deleted successfully.');
+    } catch (e) {
+      console.error(e);
+      setError('Failed to delete complaint.');
     }
   };
 
@@ -383,6 +386,7 @@ export default function App() {
                             <>
                               <button onClick={() => handleUpdateComplaintStatus(complaint.id!, 'IN_PROGRESS')} style={secondaryButtonStyle}>In Progress</button>
                               <button onClick={() => handleUpdateComplaintStatus(complaint.id!, 'RESOLVED')} style={primaryButtonStyle}>Resolve</button>
+                              <button onClick={() => handleDeleteComplaint(complaint.id!)} style={{ ...primaryButtonStyle, background: '#dc2626' }}>Delete</button>
                             </>
                           ) : null}
                         </td>
@@ -433,13 +437,13 @@ export default function App() {
           {userView === 'report' ? (
             <section style={sectionStyle}>
               <h2>Submit Issue Report</h2>
-              <p>Scan the QR label to populate the bin code, then submit the issue.</p>
-              <button type="button" onClick={handleScanQr} style={secondaryButtonStyle}>Scan QR Code</button>
+              <p>Enter the bin code, then submit the issue.</p>
+              
               <form onSubmit={submitIssue} style={formStyle}>
                 <input
                   value={form.binCode}
                   onChange={(e) => setForm({ ...form, binCode: e.target.value })}
-                  placeholder="Bin Code from QR"
+                  placeholder="Enter Bin Code"
                   style={inputStyle}
                 />
                 <select value={form.issueType} onChange={(e) => setForm({ ...form, issueType: e.target.value })} style={inputStyle}>
@@ -470,15 +474,14 @@ export default function App() {
           {userView === 'track' ? (
             <section style={sectionStyle}>
               <h2>Track Bin Status</h2>
-              <p>Enter the scanned bin code or use the QR scan button to load it.</p>
+              <p>Enter the bin code to track the status of reported issues.</p>
               <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '12px' }}>
                 <input
                   value={trackBinCode}
                   onChange={(e) => setTrackBinCode(e.target.value)}
-                  placeholder="Bin Code from QR"
+                  placeholder="Enter Bin Code"
                   style={inputStyle}
                 />
-                <button type="button" onClick={handleScanQr} style={secondaryButtonStyle}>Scan QR Code</button>
                 <button type="button" onClick={handleTrackStatus} style={primaryButtonStyle}>Track Status</button>
               </div>
               {trackResults.length > 0 ? (
