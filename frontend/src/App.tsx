@@ -113,7 +113,7 @@ export default function App() {
       if (role === 'admin') loadComplaints();
     } catch (e) {
       console.error(e);
-      setError('Failed to submit complaint.');
+      setError(e instanceof Error ? e.message : 'Failed to submit complaint.');
     }
   };
 

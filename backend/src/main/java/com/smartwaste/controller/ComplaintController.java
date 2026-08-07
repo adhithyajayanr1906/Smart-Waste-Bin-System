@@ -12,6 +12,11 @@ import java.util.Map;
 @RequestMapping("/api/complaints")
 public class ComplaintController {
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+    }
+
     private final ComplaintService complaintService;
 
     public ComplaintController(ComplaintService complaintService) {

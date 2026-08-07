@@ -66,7 +66,10 @@ export const createComplaint = async (complaint: Complaint): Promise<Complaint> 
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(complaint),
   });
-  if (!res.ok) throw new Error('Failed to create complaint');
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => null);
+    throw new Error(errorData?.error || 'Failed to create complaint');
+  }
   return res.json();
 };
 
