@@ -25,7 +25,7 @@ public class ComplaintService {
         if (binOpt.isEmpty() || !"ACTIVE".equalsIgnoreCase(binOpt.get().getStatus())) {
             throw new IllegalArgumentException("no bins found");
         }
-        
+
         complaint.setStatus(complaint.getStatus() == null ? "PENDING" : complaint.getStatus());
         return complaintRepository.save(complaint);
     }
