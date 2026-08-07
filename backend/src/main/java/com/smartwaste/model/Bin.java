@@ -2,12 +2,16 @@ package com.smartwaste.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 @Document(collection = "bins")
 public class Bin {
     @Id
     private String id;
+    
+    @Indexed(unique = true)
     private String binCode;
+    
     private String location;
     private String fillLevel;
     private String status;

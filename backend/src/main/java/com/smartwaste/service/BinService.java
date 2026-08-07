@@ -22,7 +22,7 @@ public class BinService {
     public Bin addBin(Bin bin) {
         validateBinCode(bin.getBinCode());
         if (binRepository.existsByBinCode(bin.getBinCode())) {
-            throw new IllegalArgumentException("Bin code already exists: " + bin.getBinCode());
+            throw new IllegalArgumentException("bins duplicated");
         }
         return binRepository.save(bin);
     }
@@ -43,7 +43,7 @@ public class BinService {
             if (updated.getBinCode() != null && !updated.getBinCode().equals(bin.getBinCode())) {
                 validateBinCode(updated.getBinCode());
                 if (binRepository.existsByBinCode(updated.getBinCode())) {
-                    throw new IllegalArgumentException("Bin code already exists: " + updated.getBinCode());
+                    throw new IllegalArgumentException("bins duplicated");
                 }
                 bin.setBinCode(updated.getBinCode());
             }
