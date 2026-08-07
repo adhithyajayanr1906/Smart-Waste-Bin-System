@@ -195,7 +195,6 @@ export default function App() {
   };
 
   const handleDeleteComplaint = async (id: string) => {
-    if (!confirm('Permanent delete: Are you sure you want to delete this issue report?')) return;
     try {
       await deleteComplaint(id);
       await loadComplaints();
